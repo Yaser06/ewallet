@@ -1,0 +1,388 @@
+{
+	"info": {
+		"_postman_id": "b4c9fa1f-86c1-43e3-8b71-648c46568dc7",
+		"name": "ewalletApplication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add First Acount",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Yaser\",\n    \"lastName\": \"Aktas\",\n    \"phone\": \"1234567890\",\n    \"email\": \"yaser@gmail.com\",\n    \"password\": \"password123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/account/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"account",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Second Acount",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Elif\",\n    \"lastName\": \"Donmez\",\n    \"phone\": \"394235252\",\n    \"email\": \"elif@gmail.com\",\n    \"password\": \"pass1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/account/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"account",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add First Wallet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"account\": {\n    \"id\": 1\n        },\n    \"walletType\": \"Open\",\n    \"provider\": \"XBank\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/wallet/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"wallet",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Second Wallet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"account\": {\n    \"id\": 2\n        },\n    \"walletType\": \"Open\",\n    \"provider\": \"XBank\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/wallet/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"wallet",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create First Money Balance",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\":500.00,\n     \"wallet\" : {\n         \"id\":1\n     },\n     \"currency\": \"Euro\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/moneybalance/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"moneybalance",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Second Money Balance",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\":500.00,\n     \"wallet\" : {\n         \"id\":2\n     },\n     \"currency\": \"Euro\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/moneybalance/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"moneybalance",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Money Balance Adding Money",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8095/api/v1/moneybalance/update?walletPublicKey=191817e2-ab80-4633-b8fe-6e6831a59fce&transactionType=AddMoney&amount=200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"moneybalance",
+						"update"
+					],
+					"query": [
+						{
+							"key": "walletPublicKey",
+							"value": "191817e2-ab80-4633-b8fe-6e6831a59fce"
+						},
+						{
+							"key": "transactionType",
+							"value": "AddMoney"
+						},
+						{
+							"key": "amount",
+							"value": "200"
+						},
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer to Transfer Wallet",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"transactionType\": \"Remittance\",\n    \"description\": \"Sending money to loan :)\",\n    \"sourceWalletPublicKey\": \"df5996ad-bf6c-4b66-a6f1-990e1b58b4a4\",\n    \"targetWalletPublicKey\": \"69c1c98e-2763-42aa-9d5b-19028e1739bd\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/transaction/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"transaction",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Money Balance Withdraw Money",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjpwYXNzd29yZA==",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8095/api/v1/moneybalance/update?walletPublicKey=191817e2-ab80-4633-b8fe-6e6831a59fce&transactionType=Withdraw&amount=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"moneybalance",
+						"update"
+					],
+					"query": [
+						{
+							"key": "walletPublicKey",
+							"value": "191817e2-ab80-4633-b8fe-6e6831a59fce"
+						},
+						{
+							"key": "transactionType",
+							"value": "Withdraw"
+						},
+						{
+							"key": "amount",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add AnotherCardtoWallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"wallet\": {\n        \"id\":1\n    },\n    \"anotherCardInformationType\":\"DriverLicense\",\n    \"cardNumber\" :\"143565332\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8095/api/v1/anothercard/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"api",
+						"v1",
+						"anothercard",
+						"create"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
