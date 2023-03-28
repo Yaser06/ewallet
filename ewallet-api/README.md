@@ -2,7 +2,7 @@
 
 ---
 ### Database Diagram
-![DatabaseDiagram](assets/ewallet-api/dbdiagram.png)
+![DatabaseDiagram](/assets/dbdiagram.png)
 
 ### The service provides an API
 #### `E-WALLET API`
@@ -38,5 +38,5 @@
 - Postman <a href="assets/ewallet-api/ewalletApplication.postman_collection.json">collections</a> can be accessed under the Asset folder.
 ---
 
-![postmanCollection](collection.png)
+![postmanCollection](/assets/collection.png)
 
