@@ -2,7 +2,7 @@
 ---
 
 ## Example Web view
-![UI Example](assets/ewallet-fe/uiexample.png)
+![UI Example](/assets/uiexample.png)
 
 ---
 
@@ -19,10 +19,3 @@ npm run start
 ### Summary
 
 A simple choice between two transaction types has been set up: withdrawing or adding money. This page is designed for you to manage your wallet by performing these transactions.
-
-
-
-
-
-
-
