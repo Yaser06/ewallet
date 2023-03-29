@@ -35,7 +35,7 @@
 ## Providing
 
 ---
-- Postman <a href="assets/ewallet-api/ewalletApplication.postman_collection.json">collections</a> can be accessed under the Asset folder.
+- Postman <a href="/assets/ewalletApplication.postman_collection.json" download>collections</a> can be accessed under the Asset folder.
 ---
 
 ![postmanCollection](/assets/collection.png)
