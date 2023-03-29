@@ -2,30 +2,19 @@ version: '3.9'
 
 services:
   app:
-    image: 'postgres'
-    build:
-      context: .
+    container_name: wallet-api
+    image: springboot-postgresql
+    build: ./
     ports:
       - "8095:8095"
-    container_name: app
-    restart: always
     depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_JPA_SHOW-SQL=true
-      - SPRING_JPA_DATABASE-PLATFORM=org.hibernate.dialect.PostgreSQL9Dialect
-      - POSTGRES_HOST_AUTH_METHOD=trust
-
-  db:
-    image: 'postgres'
-    container_name: db
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - postgresql
+  postgresql:
+    container_name: postgresqldb
+    image: postgres
     ports:
-      - "54320:5432"
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=postgresqldb

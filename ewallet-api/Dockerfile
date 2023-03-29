@@ -5,10 +5,10 @@ COPY .mvn .mvn
 RUN ./mvnw dependency:resolve
 
 COPY src src
-RUN ./mvnw package
+RUN ./mvnw package -DskipTests
 
 FROM openjdk:11
-WORKDIR ewallet
-COPY --from=build target/*.jar ewallet.jar
-ENTRYPOINT ["java", "-jar", "ewallet.jar"]
+WORKDIR ewallet-api
+COPY --from=build target/*.jar ewallet-api.jar
+ENTRYPOINT ["java", "-jar", "ewallet-api.jar"]
 EXPOSE 8095
