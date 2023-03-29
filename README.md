@@ -35,10 +35,10 @@ POST /api/v1/transaction/create - creates a new transaction
 PUT /api/v1/moneybalance/update - update moneybalance
 PUT /api/v1/transaction/update - transfer to transfer wallet
 
-GET //api/v1/wallet/list - all wallet list
+GET /api/v1/wallet/list - all wallet list
 ```
-
-JUnit test coverage is 63% as well as integration tests are available.
+---
+### JUnit test coverage is 63% as well as unit tests are available.
 
 
 ### Tech Stack
@@ -95,5 +95,5 @@ $ npm run start
 
 A basic control authorization is used. Do not forget to add headers key in API requests.
 ```ssh
-Basic dXNlcjpwYXNzd29yZA==
+Authorization : "Basic dXNlcjpwYXNzd29yZA=="
 ```
