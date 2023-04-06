@@ -1,5 +1,7 @@
 package com.yaser.ewallet.controller;
 
+import com.yaser.ewallet.dto.MoneyBalanceDto;
+import com.yaser.ewallet.dto.TransactionDto;
 import com.yaser.ewallet.exception.InsufficientBalanceException;
 import com.yaser.ewallet.exception.MoneyBalanceNotFoundException;
 import com.yaser.ewallet.exception.WalletNotFoundException;
@@ -17,15 +19,16 @@ public class MoneyBalanceController {
     private final MoneyBalanceService moneyBalanceService;
 
     @PostMapping("/create")
-    public ResponseEntity createMoneyBalance(@RequestBody MoneyBalance moneyBalance)
+    public ResponseEntity<MoneyBalanceDto> createMoneyBalance(@RequestBody MoneyBalance moneyBalance)
             throws WalletNotFoundException {
-        return moneyBalanceService.createMoneyBalance(moneyBalance);
+        return ResponseEntity.ok(moneyBalanceService.createMoneyBalance(moneyBalance));
     }
 
     @PutMapping("/update")
-    public ResponseEntity updateMoneyBalance(@RequestParam(value = "walletPublicKey") String walletPublicKey,
-                                             @RequestParam(value = "transactionType") String transactionType,
-                                             @RequestParam(value = "amount") Double amount) throws WalletNotFoundException, InsufficientBalanceException, MoneyBalanceNotFoundException {
-        return moneyBalanceService.updateMoneyBalance(walletPublicKey,transactionType,amount);
+    public ResponseEntity<TransactionDto> updateMoneyBalance(@RequestParam(value = "walletPublicKey") String walletPublicKey,
+                                                             @RequestParam(value = "transactionType") String transactionType,
+                                                             @RequestParam(value = "amount") Double amount) throws
+            WalletNotFoundException, InsufficientBalanceException, MoneyBalanceNotFoundException {
+        return ResponseEntity.ok(moneyBalanceService.updateMoneyBalance(walletPublicKey, transactionType, amount));
     }
 }

@@ -1,5 +1,6 @@
 package com.yaser.ewallet.controller;
 
+import com.yaser.ewallet.dto.AccountDto;
 import com.yaser.ewallet.exception.AccountCreationException;
 import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.service.AccountService;
@@ -19,7 +20,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/create")
-    public ResponseEntity createAccount(@RequestBody Account account) throws AccountCreationException {
-        return accountService.createAccount(account);
+    public ResponseEntity<AccountDto> createAccount(@RequestBody Account account)
+            throws AccountCreationException {
+        return ResponseEntity.ok(accountService.createAccount(account));
     }
 }

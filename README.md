@@ -38,7 +38,7 @@ PUT /api/v1/transaction/update - transfer to transfer wallet
 GET /api/v1/wallet/list - all wallet list
 ```
 ---
-### JUnit test coverage is 63% as well as unit tests are available.
+### JUnit test coverage is 70% as well as unit tests are available.
 
 
 ### Tech Stack
@@ -48,7 +48,7 @@ GET /api/v1/wallet/list - all wallet list
 - Spring Boot
 - Spring Data JPA
 - Restful API
-- Postgresql 
+- Mysql 
 - Docker
 - Docker compose
 - JUnit , Mockito

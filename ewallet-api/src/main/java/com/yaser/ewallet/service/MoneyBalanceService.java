@@ -1,5 +1,7 @@
 package com.yaser.ewallet.service;
 
+import com.yaser.ewallet.dto.MoneyBalanceDto;
+import com.yaser.ewallet.dto.TransactionDto;
 import com.yaser.ewallet.dto.convertar.MoneyBalanceConverter;
 import com.yaser.ewallet.dto.convertar.TransactionConverter;
 import com.yaser.ewallet.exception.InsufficientBalanceException;
@@ -10,16 +12,11 @@ import com.yaser.ewallet.model.Transaction;
 import com.yaser.ewallet.model.TransactionType;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.repository.MoneyBalanceRepository;
-import com.yaser.ewallet.utils.REnum;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,25 +31,21 @@ public class MoneyBalanceService {
     private final TransactionService transactionService;
     private static Logger logger = LoggerFactory.getLogger(MoneyBalanceService.class);
 
-    public ResponseEntity createMoneyBalance(MoneyBalance moneyBalance) throws WalletNotFoundException {
-        Map<REnum, Object> hm = new LinkedHashMap<>();
+    public MoneyBalanceDto createMoneyBalance(MoneyBalance moneyBalance) throws WalletNotFoundException {
         MoneyBalance saveMoneyBalance;
-        try {
-            saveMoneyBalance = moneyBalanceRepository.save(moneyBalance);
-            hm.put(REnum.status, true);
-            Wallet wallet = walletService.findById(saveMoneyBalance.getWallet().getId()).get();
-            saveMoneyBalance.setWallet(wallet);
-            hm.put(REnum.result, moneyBalanceConverter.toDto(saveMoneyBalance));
-        } catch (Exception exception) {
-            logger.error(exception.getMessage(), exception);
-            throw new WalletNotFoundException("Wallet not found exception.");
+
+        saveMoneyBalance = moneyBalanceRepository.save(moneyBalance);
+        Optional<Wallet> wallet = walletService.findById(saveMoneyBalance.getWallet().getId());
+        if (wallet.isPresent()) {
+            saveMoneyBalance.setWallet(wallet.get());
+            return moneyBalanceConverter.toDto(saveMoneyBalance);
         }
-        return new ResponseEntity(hm, HttpStatus.CREATED);
+        throw new WalletNotFoundException("Wallet not found exception.");
     }
 
-    public ResponseEntity updateMoneyBalance(String walletPublicKey, String transactionType, double amount)
+    public TransactionDto updateMoneyBalance(String walletPublicKey, String transactionType, double amount)
             throws WalletNotFoundException, MoneyBalanceNotFoundException, InsufficientBalanceException {
-        Map<REnum, Object> hm = new LinkedHashMap<>();
+
         Wallet wallet = walletService.getWallet(UUID.fromString(walletPublicKey));
         Optional<MoneyBalance> optionalMoneyBalance = moneyBalanceRepository.findById(wallet.getId());
         MoneyBalance moneyBalance;
@@ -61,10 +54,6 @@ public class MoneyBalanceService {
             moneyBalance = optionalMoneyBalance.get();
         } else {
             throw new MoneyBalanceNotFoundException("Money Balance not exist");
-        }
-
-        if (wallet == null) {
-            throw new WalletNotFoundException("İnvalid Wallet Public Key.");
         }
 
         if (TransactionType.AddMoney.name().equalsIgnoreCase(transactionType)) {
@@ -78,8 +67,6 @@ public class MoneyBalanceService {
         moneyBalanceRepository.save(moneyBalance);
 
         Transaction transaction = transactionService.saveTransactionOwnWallet(wallet, transactionType, amount);
-        hm.put(REnum.status, true);
-        hm.put(REnum.result, transactionConverter.toDto(transaction));
-        return new ResponseEntity(hm, HttpStatus.CREATED);
+        return transactionConverter.toDto(transaction);
     }
 }

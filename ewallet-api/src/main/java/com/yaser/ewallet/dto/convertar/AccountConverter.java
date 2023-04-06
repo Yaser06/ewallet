@@ -18,13 +18,4 @@ public class AccountConverter {
         return dto;
     }
 
-    public Account toEntity(AccountDto dto) {
-        Account account = new Account();
-        account.setFirstName(dto.getFirstName());
-        account.setLastName(dto.getLastName());
-        account.setPhone(dto.getPhone());
-        account.setEmail(dto.getEmail());
-        account.setPassword(dto.getPassword());
-        return account;
-    }
 }

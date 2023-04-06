@@ -16,13 +16,6 @@ public class AnotherCardInformationConverter {
         return dto;
     }
 
-    public AnotherCardInformation toEntity(AnotherCardInformationDto dto) {
-        AnotherCardInformation anotherCardInformation = new AnotherCardInformation();
-        anotherCardInformation.setAnotherCardInformationType(dto.getAnotherCardInformationType());
-        anotherCardInformation.setCardNumber(dto.getCardNumber());
-        anotherCardInformation.setCreatedDate(dto.getCreatedDate());
-        return anotherCardInformation;
-    }
 }
 
 

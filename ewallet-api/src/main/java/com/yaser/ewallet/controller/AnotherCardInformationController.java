@@ -1,5 +1,6 @@
 package com.yaser.ewallet.controller;
 
+import com.yaser.ewallet.dto.AnotherCardInformationDto;
 import com.yaser.ewallet.exception.WalletNotFoundException;
 import com.yaser.ewallet.model.AnotherCardInformation;
 import com.yaser.ewallet.service.AnotherCardInformationService;
@@ -18,8 +19,9 @@ public class AnotherCardInformationController {
     private final AnotherCardInformationService anotherCardInformationService;
 
     @PostMapping("/create")
-    public ResponseEntity createAnotherCard(@RequestBody AnotherCardInformation anotherCardInformation)
+    public ResponseEntity<AnotherCardInformationDto> createAnotherCard(@RequestBody AnotherCardInformation anotherCardInformation)
             throws WalletNotFoundException {
-        return anotherCardInformationService.createAnotherCardInformation(anotherCardInformation);
+        return ResponseEntity.ok(anotherCardInformationService
+                .createAnotherCardInformation(anotherCardInformation));
     }
 }

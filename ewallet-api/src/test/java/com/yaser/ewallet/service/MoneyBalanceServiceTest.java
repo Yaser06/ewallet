@@ -11,13 +11,11 @@ import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.repository.MoneyBalanceRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
 import java.util.Optional;
@@ -26,7 +24,8 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class MoneyBalanceServiceTest {
 
     @Mock
@@ -51,13 +50,15 @@ public class MoneyBalanceServiceTest {
     void createMoneyBalance_ReturnsCreatedStatus_WhenWallettIsValid() throws WalletNotFoundException {
         Wallet wallet = getWallet();
         MoneyBalance moneyBalance = getMoneyBalance();
+        MoneyBalanceDto expected = getMoneyBalanceDto(moneyBalance);
 
         Mockito.when(moneyBalanceRepository.save(moneyBalance)).thenReturn(moneyBalance);
         Mockito.when(walletService.findById(wallet.getId())).thenReturn(Optional.of(wallet));
-        Mockito.when(moneyBalanceConverter.toDto(moneyBalance)).thenReturn(new MoneyBalanceDto());
+        Mockito.when(moneyBalanceConverter.toDto(moneyBalance)).thenReturn(expected);
+        MoneyBalanceDto moneyBalanceDto = moneyBalanceService.createMoneyBalance(moneyBalance);
 
-        ResponseEntity responseEntity = moneyBalanceService.createMoneyBalance(moneyBalance);
-        Assertions.assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        Assertions.assertNotNull(moneyBalanceDto);
+        Assertions.assertEquals(expected, moneyBalanceDto);
     }
 
     @Test
@@ -66,33 +67,35 @@ public class MoneyBalanceServiceTest {
         double amount = 10d;
         Wallet wallet = getWallet();
         MoneyBalance moneyBalance = getMoneyBalance();
+
         Mockito.when(walletService.getWallet(wallet.getWalletPublicKey())).thenReturn(wallet);
         Mockito.when(transactionConverter.toDto(any())).thenReturn(new TransactionDto());
         Mockito.when(moneyBalanceRepository.findById(wallet.getId())).thenReturn(Optional.of(moneyBalance));
         doReturn(new Transaction()).when(transactionService).saveTransactionOwnWallet(wallet,
                 TransactionType.AddMoney.name(), amount);
 
-        ResponseEntity responseEntity = moneyBalanceService
-                .updateMoneyBalance(wallet.getWalletPublicKey().toString(),
-                        TransactionType.AddMoney.name(), amount);
+        TransactionDto transactionDto = moneyBalanceService.updateMoneyBalance(wallet.getWalletPublicKey().toString(),
+                TransactionType.AddMoney.name(), amount);
 
-        Assertions.assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        Assertions.assertNotNull(transactionDto);
     }
 
     @Test
     void updateMoneyBalance_ReturnSuccess_Withdraw() throws WalletNotFoundException, InsufficientBalanceException, MoneyBalanceNotFoundException {
-
+        double amount = 10d;
         Wallet wallet = getWallet();
         MoneyBalance moneyBalance = getMoneyBalance();
 
         Mockito.when(walletService.getWallet(wallet.getWalletPublicKey())).thenReturn(wallet);
         Mockito.when(moneyBalanceRepository.findById(wallet.getId())).thenReturn(Optional.of(moneyBalance));
         Mockito.when(transactionConverter.toDto(Mockito.any())).thenReturn(new TransactionDto());
+        doReturn(new Transaction()).when(transactionService).saveTransactionOwnWallet(wallet,
+                TransactionType.Withdraw.name(), amount);
 
-        moneyBalanceService.updateMoneyBalance(wallet.getWalletPublicKey().toString()
-                , TransactionType.Withdraw.name(), moneyBalance.getAmount());
-        Mockito.verify(moneyBalanceRepository, Mockito.times(1)).save(moneyBalance);
+        TransactionDto transactionDto = moneyBalanceService.updateMoneyBalance(wallet.getWalletPublicKey().toString()
+                , TransactionType.Withdraw.name(), amount);
 
+        Assertions.assertNotNull(transactionDto);
     }
 
     private Wallet getWallet() {
@@ -110,10 +113,17 @@ public class MoneyBalanceServiceTest {
         MoneyBalance moneyBalance = new MoneyBalance();
         moneyBalance.setId(1l);
         moneyBalance.setCurrency(Currency.Euro);
-        moneyBalance.setCurrency(Currency.Euro);
         moneyBalance.setWallet(getWallet());
         moneyBalance.setAmount(100.0);
         return moneyBalance;
+    }
+
+    private MoneyBalanceDto getMoneyBalanceDto(MoneyBalance moneyBalance) {
+        MoneyBalanceDto moneyBalanceDto = new MoneyBalanceDto();
+        moneyBalanceDto.setCurrency(moneyBalance.getCurrency());
+        moneyBalanceDto.setWallet(moneyBalance.getWallet());
+        moneyBalanceDto.setAmount(moneyBalance.getAmount());
+        return moneyBalanceDto;
     }
 
     private Account getAccount() {

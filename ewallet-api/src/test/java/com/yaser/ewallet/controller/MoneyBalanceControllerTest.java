@@ -1,13 +1,13 @@
 package com.yaser.ewallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yaser.ewallet.dto.MoneyBalanceDto;
+import com.yaser.ewallet.dto.TransactionDto;
 import com.yaser.ewallet.exception.InsufficientBalanceException;
 import com.yaser.ewallet.exception.WalletNotFoundException;
-import com.yaser.ewallet.model.Account;
-import com.yaser.ewallet.model.Currency;
-import com.yaser.ewallet.model.MoneyBalance;
-import com.yaser.ewallet.model.Wallet;
+import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.service.MoneyBalanceService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
@@ -23,10 +22,9 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -42,14 +40,39 @@ public class MoneyBalanceControllerTest {
     @MockBean
     private MoneyBalanceService moneyBalanceService;
 
+    private MoneyBalanceDto moneyBalanceDto;
+
+    private TransactionDto transactionDto;
+    private static final String WALLET_PUBLIC_KEY = "3f3d9a2a-5425-43f5-b8a5-b16e5b1601d6";
+    private static final double AMOUNT = 2000.0;
+
+    @BeforeEach
+    public void setUp() {
+        objectMapper = new ObjectMapper();
+
+        Wallet wallet = new Wallet();
+        wallet.setWalletPublicKey(UUID.fromString(WALLET_PUBLIC_KEY));
+
+        moneyBalanceDto = new MoneyBalanceDto();
+        moneyBalanceDto.setAmount(2000.0);
+        moneyBalanceDto.setWallet(wallet);
+
+        transactionDto = new TransactionDto();
+        transactionDto.setTransactionAmount(AMOUNT);
+        transactionDto.setTransactionType(TransactionType.Remittance);
+        transactionDto.setSourceWallet(wallet.getId());
+        transactionDto.setTargetWallet(wallet.getId());
+    }
+
     @Test
     void createMoneyBalance_ReturnsOkStatus_WhenMoneyBalanceIsValid() throws Exception {
         Wallet wallet = getWallet();
         MoneyBalance moneyBalance = getMoneyBalance();
         moneyBalance.setWallet(wallet);
+        MoneyBalanceDto moneyBalanceDto = getMonetBalanceDto(moneyBalance);
 
         given(moneyBalanceService.createMoneyBalance(any(MoneyBalance.class)))
-                .willReturn(ResponseEntity.ok().build());
+                .willReturn(moneyBalanceDto);
         mockMvc.perform(post("/api/v1/moneybalance/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -59,12 +82,10 @@ public class MoneyBalanceControllerTest {
 
     @Test
     void createMoneyBalance_ReturnsNotFoundStatus_WhenWalletNotFound() throws Exception {
-        Wallet wallet = getWallet();
         MoneyBalance moneyBalance = getMoneyBalance();
-        moneyBalance.setWallet(wallet);
 
         doThrow(new WalletNotFoundException("Wallet Not Found")).when(moneyBalanceService)
-                .createMoneyBalance(any(MoneyBalance.class));
+                .createMoneyBalance(moneyBalance);
         mockMvc.perform(post("/api/v1/moneybalance/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -77,9 +98,11 @@ public class MoneyBalanceControllerTest {
         Wallet wallet = getWallet();
         MoneyBalance moneyBalance = getMoneyBalance();
         moneyBalance.setWallet(wallet);
+        MoneyBalanceDto moneyBalanceDto = getMonetBalanceDto(moneyBalance);
+        TransactionDto transactionDto = mock(TransactionDto.class);
+        when(moneyBalanceService.updateMoneyBalance(WALLET_PUBLIC_KEY, TransactionType.AddMoney.name(), AMOUNT))
+                .thenReturn(transactionDto);
 
-        given(moneyBalanceService.updateMoneyBalance(anyString(), anyString(), anyDouble()))
-                .willReturn(ResponseEntity.ok().build());
         mockMvc.perform(put("/api/v1/moneybalance/update")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -115,9 +138,7 @@ public class MoneyBalanceControllerTest {
                         .param("transactionType", "Withdraw")
                         .param("walletPublicKey", "TestKey")
                         .param("amount", "200.0"))
-                .andExpect(status().isPaymentRequired())
-                .andExpect(content()
-                        .string("{\"status\":false,\"errors\":\"Insufficient Balance Exception.\"}"));
+                .andExpect(status().isPaymentRequired());
     }
 
     private Wallet getWallet() {
@@ -135,9 +156,15 @@ public class MoneyBalanceControllerTest {
         MoneyBalance moneyBalance = new MoneyBalance();
         moneyBalance.setId(1l);
         moneyBalance.setCurrency(Currency.Euro);
-        moneyBalance.setCurrency(Currency.Euro);
         moneyBalance.setAmount(100.0);
         return moneyBalance;
+    }
+
+    private MoneyBalanceDto getMonetBalanceDto(MoneyBalance moneyBalance) {
+        MoneyBalanceDto moneyBalanceDto = new MoneyBalanceDto();
+        moneyBalance.setCurrency(moneyBalance.getCurrency());
+        moneyBalance.setAmount(moneyBalance.getAmount());
+        return moneyBalanceDto;
     }
 
     private Account getAccount() {

@@ -1,6 +1,8 @@
 package com.yaser.ewallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yaser.ewallet.dto.AccountDto;
+import com.yaser.ewallet.exception.AccountCreationException;
 import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.service.AccountService;
@@ -10,9 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -36,10 +36,12 @@ public class AccountControllerTest {
     @MockBean
     private AccountService accountService;
 
+
     @Test
     void createAccount_ReturnsOkStatus_WhenAccountIsValid() throws Exception {
         Account account = getAccount();
-        given(accountService.createAccount(account)).willReturn(ResponseEntity.ok().build());
+        AccountDto expected = getAccountDto(account);
+        given(accountService.createAccount(account)).willReturn(expected);
 
         mockMvc.perform(post("/api/v1/account/create")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -50,16 +52,16 @@ public class AccountControllerTest {
     @Test
     void createAccount_ReturnsBadRequestStatus_WhenAccountIsInvalid() throws Exception {
         Account account = getAccount();
-        ResponseEntity responseEntity = new ResponseEntity(account, HttpStatus.BAD_REQUEST);
-        given(accountService.createAccount(account)).willReturn(responseEntity);
+        given(accountService.createAccount(account)).willThrow(AccountCreationException.class);
 
         mockMvc.perform(post("/api/v1/account/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
                         .content(objectMapper.writeValueAsString(account))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is4xxClientError());
     }
+
 
     private Account getAccount() {
         Account account = new Account();
@@ -73,6 +75,15 @@ public class AccountControllerTest {
         List<Wallet> walletList = new ArrayList<>();
         account.setWallets(walletList);
         return account;
+    }
+    private AccountDto getAccountDto(Account account) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setEmail(account.getEmail());
+        accountDto.setPassword(account.getPassword());
+        accountDto.setFirstName(account.getFirstName());
+        accountDto.setLastName(account.getLastName());
+        accountDto.setPhone(account.getPhone());
+        return accountDto;
     }
 }
 

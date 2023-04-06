@@ -1,11 +1,13 @@
 package com.yaser.ewallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yaser.ewallet.dto.TransactionDto;
 import com.yaser.ewallet.dto.WalletTransactionDto;
 import com.yaser.ewallet.exception.TransactionCreationException;
 import com.yaser.ewallet.model.MoneyBalance;
 import com.yaser.ewallet.model.Transaction;
 import com.yaser.ewallet.model.Wallet;
+import com.yaser.ewallet.repository.TransactionRepository;
 import com.yaser.ewallet.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
@@ -38,19 +39,21 @@ public class TransactionControllerTest {
 
     @MockBean
     private TransactionService transactionService;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Test
     void createTransaction_ReturnsOkStatus_WhenTransactionIsValid() throws Exception {
-
         Wallet sourceWallet = getWallet();
         Wallet targetWallet = getWallet();
 
         Transaction transaction = getTransaction();
         transaction.setSourceWallet(sourceWallet);
         transaction.setTargetWallet(targetWallet);
+        TransactionDto transactionDto=getTransactionDto(transaction);
 
         given(transactionService.createTransaction(any(Transaction.class)))
-                .willReturn(ResponseEntity.ok().build());
+                .willReturn(transactionDto);
         mockMvc.perform(post("/api/v1/transaction/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -62,7 +65,6 @@ public class TransactionControllerTest {
     void createTransaction_ReturnsBadRequestStatus_WhenTransactionIsInvalid() throws Exception {
         Wallet sourceWallet = getWallet();
         Wallet targetWallet = getWallet();
-
         Transaction transaction = getTransaction();
         transaction.setSourceWallet(sourceWallet);
         transaction.setTargetWallet(targetWallet);
@@ -80,8 +82,8 @@ public class TransactionControllerTest {
     void transferWallettoWallet_ReturnsOkStatus_WhenTransactionIsValid() throws Exception {
         WalletTransactionDto walletTransactionDto = getWalletTransactionDto();
 
-        given(transactionService.transferBalanceWalletToWallet(any(WalletTransactionDto.class)))
-                .willReturn(ResponseEntity.ok().build());
+        given(transactionService.transferBalanceWalletToWallet(walletTransactionDto))
+                .willReturn(any(TransactionDto.class));
         mockMvc.perform(put("/api/v1/transaction/transfer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -108,6 +110,16 @@ public class TransactionControllerTest {
         transaction.setDescription("Transaction Test");
         transaction.setCreatedDate(new Date());
         return transaction;
+    }
+
+    private TransactionDto getTransactionDto(Transaction transaction) {
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setTransactionId(transaction.getTransactionId());
+        transactionDto.setDescription(transaction.getDescription());
+        transactionDto.setCreatedDate(transaction.getCreatedDate());
+        transactionDto.setTargetWallet(transaction.getTargetWallet().getId());
+        transactionDto.setSourceWallet(transaction.getSourceWallet().getId());
+        return transactionDto;
     }
 
     private Wallet getWallet() {

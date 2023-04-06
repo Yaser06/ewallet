@@ -1,65 +1,58 @@
 package com.yaser.ewallet.service;
 
+import com.yaser.ewallet.dto.AccountDto;
 import com.yaser.ewallet.dto.convertar.AccountConverter;
 import com.yaser.ewallet.exception.AccountCreationException;
 import com.yaser.ewallet.model.Account;
-import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.repository.AccountRepository;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class AccountServiceTest {
 
-    @InjectMocks
     private AccountService accountService;
-
-    @Spy
     private AccountRepository accountRepository;
-
-    @Spy
     private AccountConverter accountConverter;
+
+    @BeforeEach
+    public void setUp() {
+        accountRepository = mock(AccountRepository.class);
+        accountService = mock(AccountService.class);
+        accountConverter = mock(AccountConverter.class);
+        accountService = new AccountService(accountRepository, accountConverter);
+    }
 
 
     @Test
     public void createAccount_WhenAccountIsValid() throws AccountCreationException {
         Account account = getAccount();
-
-        List<Wallet> walletList = new ArrayList<>();
-        account.setWallets(walletList);
-
-        Mockito.when(accountRepository.save(Mockito.any())).thenReturn(account);
-
-        ResponseEntity<Account> res = accountService.createAccount(account);
-        Assertions.assertNotNull(res);
+        AccountDto expected = getAccountDto(account);
+        Mockito.when(accountRepository.save(account)).thenReturn(account);
+        Mockito.when(accountConverter.toDTO(account)).thenReturn(expected);
+        AccountDto actual = accountService.createAccount(account);
+        Assertions.assertNotNull(actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void createAccount_ThrowExceptionByRepositoryTest() {
         Account account = getAccount();
-
-        List<Wallet> walletList = new ArrayList<>();
-        account.setWallets(walletList);
-
         doThrow(HibernateException.class).when(accountRepository).save(any());
-
         Executable executable = () -> accountService.createAccount(account);
-
         Assertions.assertThrows(AccountCreationException.class, executable);
     }
 
@@ -74,4 +67,15 @@ public class AccountServiceTest {
         account.setPhone("123456789");
         return account;
     }
+
+    private AccountDto getAccountDto(Account account) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setEmail(account.getEmail());
+        accountDto.setPassword(account.getPassword());
+        accountDto.setFirstName(account.getFirstName());
+        accountDto.setLastName(account.getLastName());
+        accountDto.setPhone(account.getPhone());
+        return accountDto;
+    }
+
 }

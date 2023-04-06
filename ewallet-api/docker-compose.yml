@@ -3,18 +3,21 @@ version: '3.9'
 services:
   app:
     container_name: wallet-api
-    image: springboot-postgresql
-    build: ./
+    image: springboot-mysql
     ports:
       - "8095:8095"
+    build:
+      dockerfile: Dockerfile
     depends_on:
-      - postgresql
-  postgresql:
-    container_name: postgresqldb
-    image: postgres
-    ports:
-      - "5432:5432"
+      mysql:
+        condition: service_healthy
+  mysql:
+    container_name: mysql-db
+    image: 'mysql/mysql-server:5.7'
     environment:
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_USER=root
-      - POSTGRES_DB=postgresqldb
+      MYSQL_DATABASE: mysqldb
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - '3306:3306'
+    restart: always

@@ -11,19 +11,14 @@ import com.yaser.ewallet.model.TransactionType;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.repository.MoneyBalanceRepository;
 import com.yaser.ewallet.repository.TransactionRepository;
-import com.yaser.ewallet.repository.WalletRepository;
 import com.yaser.ewallet.utils.FeeCalculate;
-import com.yaser.ewallet.utils.REnum;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -36,30 +31,28 @@ public class TransactionService {
     private final TransactionConverter transactionConverter;
     private static Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
-    public ResponseEntity createTransaction(Transaction transaction)
+    @Transactional
+    public TransactionDto createTransaction(Transaction transaction)
             throws TransactionCreationException {
 
-        Map<REnum, Object> hm = new LinkedHashMap<>();
         Transaction savedTransaction;
         try {
             transaction.setCreatedDate(new Date(System.currentTimeMillis()));
             transaction.setTransactionId(UUID.randomUUID());
             savedTransaction = transactionRepository.save(transaction);
-            hm.put(REnum.status, true);
-            hm.put(REnum.result, transactionConverter.toDto(savedTransaction));
+            return transactionConverter.toDto(savedTransaction);
         } catch (Exception exception) {
             logger.error(exception.getMessage(), exception);
             String message = "Error occured while saving transaction..";
             throw new TransactionCreationException(message);
         }
-        return new ResponseEntity(hm, HttpStatus.CREATED);
     }
 
-    public ResponseEntity transferBalanceWalletToWallet(WalletTransactionDto walletTransactionDto)
+    @Transactional
+    public TransactionDto transferBalanceWalletToWallet(WalletTransactionDto walletTransactionDto)
             throws InsufficientBalanceException, WalletNotFoundException, CurrencyMismatchException,
             UnsupportedOperationException, WalletTypeMismatchException {
 
-        Map<REnum, Object> hm = new LinkedHashMap<>();
         String sourceWalletPublicKey = walletTransactionDto.getSourceWalletPublicKey();
         String targetWalletPublickey = walletTransactionDto.getTargetWalletPublicKey();
 
@@ -70,14 +63,14 @@ public class TransactionService {
         MoneyBalance moneyBalanceSource = moneyBalanceRepository.findByWallet(sourceWallet);
         MoneyBalance moneyBalanceTarget = moneyBalanceRepository.findByWallet(targetWallet);
 
-        if (!sourceWallet.getWalletType().name().equals(targetWallet.getWalletType().name())) {
+        if (!sourceWallet.getWalletType().equals(targetWallet.getWalletType())) {
             throw new WalletTypeMismatchException("Wallet type different.");
         }
 
-        if (!TransactionType.Remittance.name().equals(walletTransactionDto.getTransactionType().name())) {
+        if (!TransactionType.Remittance.equals(walletTransactionDto.getTransactionType())) {
             throw new UnsupportedOperationException("Transaction type not suitable");
         }
-        if (!moneyBalanceSource.getCurrency().name().equals(moneyBalanceTarget.getCurrency().name())) {
+        if (!moneyBalanceSource.getCurrency().equals(moneyBalanceTarget.getCurrency())) {
             throw new CurrencyMismatchException("Currency not the same.");
         }
 
@@ -92,11 +85,10 @@ public class TransactionService {
         moneyBalanceRepository.save(moneyBalanceSource);
         moneyBalanceRepository.save(moneyBalanceTarget);
 
-        hm.put(REnum.status, true);
+
         Transaction transaction = saveTransactionWalletToWallet(sourceWallet, targetWallet, walletTransactionDto);
         TransactionDto transactionDto = transactionConverter.toDto(transaction);
-        hm.put(REnum.result, transactionDto);
-        return new ResponseEntity(hm, HttpStatus.CREATED);
+        return transactionDto;
     }
 
     private Transaction saveTransactionWalletToWallet(Wallet sourceWallet, Wallet targetWallet,

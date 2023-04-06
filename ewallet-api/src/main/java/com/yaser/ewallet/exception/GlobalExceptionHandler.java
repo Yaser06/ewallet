@@ -13,7 +13,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountCreationException.class)
-    public ResponseEntity accountCreatException(AccountCreationException ex) {
+    public ResponseEntity <Map<REnum, Object>> accountCreatException(AccountCreationException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(WalletCreationException.class)
-    public ResponseEntity walletCreatException(WalletCreationException ex) {
+    public ResponseEntity <Map<REnum, Object>> walletCreatException(WalletCreationException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(WalletNotFoundException.class)
-    public ResponseEntity walletNotFound(WalletNotFoundException ex) {
+    public ResponseEntity <Map<REnum, Object>> walletNotFound(WalletNotFoundException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MoneyBalanceNotFoundException.class)
-    public ResponseEntity moneyBalanceNotFound(MoneyBalanceNotFoundException ex) {
+    public ResponseEntity <Map<REnum, Object>> moneyBalanceNotFound(MoneyBalanceNotFoundException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TransactionCreationException.class)
-    public ResponseEntity transactionCreatException(TransactionCreationException ex) {
+    public ResponseEntity <Map<REnum, Object>> transactionCreatException(TransactionCreationException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CurrencyMismatchException.class)
-    public ResponseEntity currencyMismatchException(CurrencyMismatchException ex) {
+    public ResponseEntity <Map<REnum, Object>> currencyMismatchException(CurrencyMismatchException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(WalletTypeMismatchException.class)
-    public ResponseEntity walletMismatchException(WalletTypeMismatchException ex) {
+    public ResponseEntity <Map<REnum, Object>> walletMismatchException(WalletTypeMismatchException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity unsupportedOperationException(UnsupportedOperationException ex) {
+    public ResponseEntity <Map<REnum, Object>> unsupportedOperationException(UnsupportedOperationException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
-    public ResponseEntity insufficientBalanceException(InsufficientBalanceException ex) {
+    public ResponseEntity <Map<REnum, Object>> insufficientBalanceException(InsufficientBalanceException ex) {
         Map<REnum, Object> hm = new LinkedHashMap<>();
         hm.put(REnum.status, false);
         hm.put(REnum.errors, ex.getMessage());

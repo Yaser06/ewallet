@@ -16,7 +16,7 @@
 - Java 11
 - Spring Boot 
 - Spring Data JPA
-- PostgreSQL
+- MySQL
 - Restful API
 - Maven
 - Junit

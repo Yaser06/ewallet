@@ -7,27 +7,25 @@ import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.model.AnotherCardInformation;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.repository.AnotherCardInformationRepository;
-import com.yaser.ewallet.utils.REnum;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class AnotherCardInformationServiceTest {
 
-    @InjectMocks
-    private AnotherCardInformationService anotherCardInformationService;
-
     @Mock
-    private AnotherCardInformationRepository anotherCardInformationRepository;
+    private AnotherCardInformationRepository informationRepository;
 
     @Mock
     private WalletService walletService;
@@ -35,34 +33,38 @@ public class AnotherCardInformationServiceTest {
     @Mock
     private AnotherCardInformationConverter anotherCardInformationConverter;
 
-    @Test
-    public void createAnotherCardInformation_ReturnsCreatedStatus_WhenWalletIsValid() throws WalletNotFoundException {
-        Wallet wallet = getWallet();
-        AnotherCardInformation information = getAnotherCardInformation();
+    @InjectMocks
+    private AnotherCardInformationService informationService;
 
-        Mockito.when(anotherCardInformationRepository.save(Mockito.any())).thenReturn(information);
-        Mockito.when(walletService.findById(Mockito.any())).thenReturn(Optional.of(wallet));
-        Mockito.when(anotherCardInformationConverter.toDto(Mockito.any())).thenReturn(new AnotherCardInformationDto());
+    private AnotherCardInformation information;
 
-        ResponseEntity response = anotherCardInformationService.createAnotherCardInformation(information);
+    private Wallet wallet;
 
-        Map<REnum, Object> expectedResponse = new LinkedHashMap<>();
-        expectedResponse.put(REnum.status, true);
-        expectedResponse.put(REnum.result, new AnotherCardInformationDto());
-        Assertions.assertEquals(new ResponseEntity(expectedResponse, HttpStatus.CREATED), response);
+    @BeforeEach
+    public void setUp() {
+        information = getAnotherCardInformation();
+        wallet = getWallet();
     }
 
     @Test
-    void createAnotherCardInformation_WalletNotFound() {
+    public void createAnotherCardInformation_WhenWalletExists() throws WalletNotFoundException {
+        AnotherCardInformationDto expected = new AnotherCardInformationDto();
+        expected.setCreatedDate(information.getCreatedDate());
+        expected.setWallet(wallet);
+        Mockito.when(walletService.findById(Mockito.anyLong())).thenReturn(Optional.of(wallet));
+        Mockito.when(informationRepository.save(Mockito.any(AnotherCardInformation.class))).thenReturn(information);
+        Mockito.when(anotherCardInformationConverter.toDto(Mockito.any(AnotherCardInformation.class))).thenReturn(expected);
+        AnotherCardInformationDto actual = informationService.createAnotherCardInformation(information);
 
-        Wallet wallet = getWallet();
-        AnotherCardInformation information = getAnotherCardInformation();
-        information.setWallet(wallet);
+        Assertions.assertNotNull(actual);
+        Assertions.assertEquals(expected, actual);
+    }
 
-        Mockito.when(walletService.findById(Mockito.eq(wallet.getId()))).thenReturn(Optional.empty());
+    @Test
+    public void createAnotherCardInformation_ThrowExceptionByWalletNotFound() {
+        Mockito.when(walletService.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(WalletNotFoundException.class,
-                () -> anotherCardInformationService.createAnotherCardInformation(information));
+        Assertions.assertThrows(WalletNotFoundException.class, () -> informationService.createAnotherCardInformation(information));
     }
 
     private Wallet getWallet() {

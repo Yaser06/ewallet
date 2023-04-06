@@ -1,6 +1,7 @@
 package com.yaser.ewallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yaser.ewallet.dto.WalletDto;
 import com.yaser.ewallet.exception.WalletCreationException;
 import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.model.MoneyBalance;
@@ -13,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -42,8 +42,9 @@ public class WalletControllerTest {
     @Test
     void createWallet_ReturnsOkStatus_WhenWalletIsValid() throws Exception {
         Wallet wallet = getWallet();
+        WalletDto expected = getWalletDto(wallet);
 
-        given(walletService.createWallet(any(Wallet.class))).willReturn(ResponseEntity.ok().build());
+        given(walletService.createWallet(any(Wallet.class))).willReturn(expected);
         mockMvc.perform(post("/api/v1/wallet/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -53,9 +54,9 @@ public class WalletControllerTest {
 
     @Test
     void createWallet_ReturnsBadRequestStatus_WhenWalletIsInvalid() throws Exception {
-        Wallet wallet = getWallet();
+        Wallet wallet = null;
 
-        given(walletService.createWallet(any(Wallet.class))).
+        given(walletService.createWallet(wallet)).
                 willThrow(new WalletCreationException("Wallet Not Found"));
         mockMvc.perform(post("/api/v1/wallet/create")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,6 +74,16 @@ public class WalletControllerTest {
         wallet.setCreatedDate(new Date());
         wallet.setMoneyBalance(new MoneyBalance());
         return wallet;
+    }
+
+    private WalletDto getWalletDto(Wallet wallet) {
+        WalletDto walletDto = new WalletDto();
+        walletDto.setId(wallet.getId());
+        walletDto.setWalletPublicKey(wallet.getWalletPublicKey());
+        walletDto.setProvider(wallet.getProvider());
+        walletDto.setCreatedDate(wallet.getCreatedDate());
+        walletDto.setMoneyBalance(wallet.getMoneyBalance());
+        return walletDto;
     }
 
     private Account getAccount() {

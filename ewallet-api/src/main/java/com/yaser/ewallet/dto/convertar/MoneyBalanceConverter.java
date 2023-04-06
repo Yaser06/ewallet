@@ -15,10 +15,4 @@ public class MoneyBalanceConverter {
         return dto;
     }
 
-    public MoneyBalance toEntity(MoneyBalanceDto dto) {
-        MoneyBalance moneyBalance = new MoneyBalance();
-        moneyBalance.setAmount(dto.getAmount());
-        moneyBalance.setCurrency(dto.getCurrency());
-        return moneyBalance;
-    }
 }

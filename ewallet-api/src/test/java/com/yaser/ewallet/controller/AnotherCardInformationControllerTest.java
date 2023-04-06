@@ -1,6 +1,7 @@
 package com.yaser.ewallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yaser.ewallet.dto.AnotherCardInformationDto;
 import com.yaser.ewallet.exception.WalletNotFoundException;
 import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.service.AnotherCardInformationService;
@@ -11,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
@@ -40,9 +40,10 @@ public class AnotherCardInformationControllerTest {
         Wallet wallet = getWallet();
         AnotherCardInformation anotherCardInformation = getInformation();
         anotherCardInformation.setWallet(wallet);
+        AnotherCardInformationDto expected = getInformationDto(anotherCardInformation);
 
         given(anotherCardInformationService.createAnotherCardInformation(anotherCardInformation))
-                .willReturn(ResponseEntity.ok().build());
+                .willReturn(expected);
         mockMvc.perform(post("/api/v1/anothercard/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==")
@@ -73,6 +74,14 @@ public class AnotherCardInformationControllerTest {
         anotherCardInformation.setCardNumber("1234567890123456");
         anotherCardInformation.setCreatedDate(new Date());
         return anotherCardInformation;
+    }
+
+    private AnotherCardInformationDto getInformationDto(AnotherCardInformation anotherCardInformation) {
+        AnotherCardInformationDto anotherCardInformationDto = new AnotherCardInformationDto();
+        anotherCardInformationDto.setAnotherCardInformationType(anotherCardInformation.getAnotherCardInformationType());
+        anotherCardInformationDto.setCardNumber(anotherCardInformation.getCardNumber());
+        anotherCardInformationDto.setCreatedDate(anotherCardInformation.getCreatedDate());
+        return anotherCardInformationDto;
     }
 
     private Wallet getWallet() {
