@@ -1,6 +1,5 @@
 package com.yaser.ewallet.service;
 
-import com.yaser.ewallet.dto.AccountDto;
 import com.yaser.ewallet.dto.WalletDto;
 import com.yaser.ewallet.dto.convertar.WalletConverter;
 import com.yaser.ewallet.model.Account;
@@ -8,17 +7,13 @@ import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.model.WalletType;
 import com.yaser.ewallet.repository.WalletRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
 import java.util.Optional;
@@ -40,6 +35,11 @@ public class WalletServiceTest {
     private Wallet sourceWallet;
     private Wallet targetWallet;
 
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
+
     @BeforeEach
     public void setup() {
         walletService = new WalletService(walletRepository, walletConverter);
@@ -53,7 +53,7 @@ public class WalletServiceTest {
         WalletDto expected = getWalletDto(wallet);
         Mockito.when(walletRepository.save(wallet)).thenReturn(wallet);
         Mockito.when(walletConverter.toDTO(wallet)).thenReturn(expected);
-        WalletDto actual =walletService.createWallet(wallet);
+        WalletDto actual = walletService.createWallet(wallet);
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(expected, actual);
     }
@@ -89,6 +89,7 @@ public class WalletServiceTest {
         wallet.setWalletType(WalletType.Open);
         return wallet;
     }
+
     private WalletDto getWalletDto(Wallet wallet) {
         WalletDto walletDto = new WalletDto();
         walletDto.setId(wallet.getId());

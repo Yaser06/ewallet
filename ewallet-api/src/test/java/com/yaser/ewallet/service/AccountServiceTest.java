@@ -7,6 +7,7 @@ import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.repository.AccountRepository;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -27,6 +28,11 @@ public class AccountServiceTest {
     private AccountService accountService;
     private AccountRepository accountRepository;
     private AccountConverter accountConverter;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @BeforeEach
     public void setUp() {

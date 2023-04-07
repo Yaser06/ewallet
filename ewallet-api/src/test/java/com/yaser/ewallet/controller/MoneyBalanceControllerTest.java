@@ -7,6 +7,7 @@ import com.yaser.ewallet.exception.InsufficientBalanceException;
 import com.yaser.ewallet.exception.WalletNotFoundException;
 import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.service.MoneyBalanceService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,11 @@ public class MoneyBalanceControllerTest {
     private TransactionDto transactionDto;
     private static final String WALLET_PUBLIC_KEY = "3f3d9a2a-5425-43f5-b8a5-b16e5b1601d6";
     private static final double AMOUNT = 2000.0;
+
+    @BeforeAll
+    public static void setEnvironment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @BeforeEach
     public void setUp() {

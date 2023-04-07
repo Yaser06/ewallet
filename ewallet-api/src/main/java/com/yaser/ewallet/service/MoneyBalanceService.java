@@ -50,11 +50,11 @@ public class MoneyBalanceService {
         Optional<MoneyBalance> optionalMoneyBalance = moneyBalanceRepository.findById(wallet.getId());
         MoneyBalance moneyBalance;
 
-        if (optionalMoneyBalance.isPresent()) {
-            moneyBalance = optionalMoneyBalance.get();
-        } else {
+        if (!optionalMoneyBalance.isPresent()) {
             throw new MoneyBalanceNotFoundException("Money Balance not exist");
         }
+
+        moneyBalance = optionalMoneyBalance.get();
 
         if (TransactionType.AddMoney.name().equalsIgnoreCase(transactionType)) {
             moneyBalance.setAmount(moneyBalance.getAmount() + amount);

@@ -52,6 +52,7 @@ GET /api/v1/wallet/list - all wallet list
 - Docker
 - Docker compose
 - JUnit , Mockito
+- Jasypt
 - ReactJS for frontend
 
 ### Prerequisites

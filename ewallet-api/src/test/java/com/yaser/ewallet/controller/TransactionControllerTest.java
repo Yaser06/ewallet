@@ -9,6 +9,7 @@ import com.yaser.ewallet.model.Transaction;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.repository.TransactionRepository;
 import com.yaser.ewallet.service.TransactionService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,8 +40,14 @@ public class TransactionControllerTest {
 
     @MockBean
     private TransactionService transactionService;
+
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @Test
     void createTransaction_ReturnsOkStatus_WhenTransactionIsValid() throws Exception {
@@ -50,7 +57,7 @@ public class TransactionControllerTest {
         Transaction transaction = getTransaction();
         transaction.setSourceWallet(sourceWallet);
         transaction.setTargetWallet(targetWallet);
-        TransactionDto transactionDto=getTransactionDto(transaction);
+        TransactionDto transactionDto = getTransactionDto(transaction);
 
         given(transactionService.createTransaction(any(Transaction.class)))
                 .willReturn(transactionDto);

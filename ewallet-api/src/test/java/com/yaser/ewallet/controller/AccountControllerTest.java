@@ -6,6 +6,7 @@ import com.yaser.ewallet.exception.AccountCreationException;
 import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.service.AccountService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,6 +36,11 @@ public class AccountControllerTest {
 
     @MockBean
     private AccountService accountService;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
 
     @Test
@@ -76,6 +82,7 @@ public class AccountControllerTest {
         account.setWallets(walletList);
         return account;
     }
+
     private AccountDto getAccountDto(Account account) {
         AccountDto accountDto = new AccountDto();
         accountDto.setEmail(account.getEmail());

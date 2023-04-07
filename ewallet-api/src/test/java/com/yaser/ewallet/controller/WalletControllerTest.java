@@ -7,6 +7,7 @@ import com.yaser.ewallet.model.Account;
 import com.yaser.ewallet.model.MoneyBalance;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.service.WalletService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,6 +39,12 @@ public class WalletControllerTest {
 
     @MockBean
     private WalletService walletService;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
+
 
     @Test
     void createWallet_ReturnsOkStatus_WhenWalletIsValid() throws Exception {

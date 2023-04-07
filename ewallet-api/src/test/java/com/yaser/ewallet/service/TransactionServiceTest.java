@@ -9,6 +9,7 @@ import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.repository.MoneyBalanceRepository;
 import com.yaser.ewallet.repository.TransactionRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -43,6 +44,11 @@ public class TransactionServiceTest {
     private TransactionService transactionService;
     private Wallet sourceWallet;
     private Wallet targetWallet;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @BeforeEach
     public void setup() {

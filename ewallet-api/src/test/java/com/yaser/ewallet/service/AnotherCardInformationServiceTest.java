@@ -8,6 +8,7 @@ import com.yaser.ewallet.model.AnotherCardInformation;
 import com.yaser.ewallet.model.Wallet;
 import com.yaser.ewallet.repository.AnotherCardInformationRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -39,6 +40,11 @@ public class AnotherCardInformationServiceTest {
     private AnotherCardInformation information;
 
     private Wallet wallet;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @BeforeEach
     public void setUp() {

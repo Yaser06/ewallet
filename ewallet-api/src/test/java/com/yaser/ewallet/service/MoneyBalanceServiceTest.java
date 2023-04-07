@@ -10,6 +10,7 @@ import com.yaser.ewallet.exception.WalletNotFoundException;
 import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.repository.MoneyBalanceRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,6 +46,11 @@ public class MoneyBalanceServiceTest {
 
     @InjectMocks
     private MoneyBalanceService moneyBalanceService;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @Test
     void createMoneyBalance_ReturnsCreatedStatus_WhenWallettIsValid() throws WalletNotFoundException {

@@ -5,6 +5,7 @@ import com.yaser.ewallet.dto.AnotherCardInformationDto;
 import com.yaser.ewallet.exception.WalletNotFoundException;
 import com.yaser.ewallet.model.*;
 import com.yaser.ewallet.service.AnotherCardInformationService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,6 +35,11 @@ public class AnotherCardInformationControllerTest {
 
     @MockBean
     private AnotherCardInformationService anotherCardInformationService;
+
+    @BeforeAll
+    public static void setEnviroment() {
+        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    }
 
     @Test
     void createAnotherCard_ReturnsOk_WhenAnotherCardInformationIsValid() throws Exception {
