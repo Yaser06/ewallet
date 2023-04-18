@@ -36,8 +36,8 @@ public class WalletServiceTest {
     private Wallet targetWallet;
 
     @BeforeAll
-    public static void setEnviroment() {
-        System.setProperty("jasypt.encryptor.password", "my-secret-value");
+    public static void setEnviroment(){
+        System.setProperty("jasypt.encryptor.password","my-secret-value");
     }
 
     @BeforeEach
@@ -53,7 +53,7 @@ public class WalletServiceTest {
         WalletDto expected = getWalletDto(wallet);
         Mockito.when(walletRepository.save(wallet)).thenReturn(wallet);
         Mockito.when(walletConverter.toDTO(wallet)).thenReturn(expected);
-        WalletDto actual = walletService.createWallet(wallet);
+        WalletDto actual =walletService.createWallet(wallet);
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(expected, actual);
     }
@@ -89,7 +89,6 @@ public class WalletServiceTest {
         wallet.setWalletType(WalletType.Open);
         return wallet;
     }
-
     private WalletDto getWalletDto(Wallet wallet) {
         WalletDto walletDto = new WalletDto();
         walletDto.setId(wallet.getId());
